@@ -1,8 +1,7 @@
-#include <ctime>
-
 #include "malpch.h"
-#include "application.h"
 
+#include "application.h"
+#include "layer.h"
 
 namespace malachite
 {
@@ -13,30 +12,68 @@ namespace malachite
         s_instance = this;
     }
 
-    int application::run()
+    void application::initalize()
+    {
+        m_time.initalizeTime = std::chrono::steady_clock::now();
+
+        //First call after application creation.
+        for (auto layer : m_layers)
+        {
+            layer->initalize();
+        }
+
+        for (auto layer : m_layers)
+        {
+            layer->postInitalize();
+        }
+    }
+
+    void application::start()
     {
         m_isRunning = true;
+        m_time.startTime = std::chrono::steady_clock::now();
 
-        int errorCode = 0;
+        for (auto layer : m_layers)
+        {
+            double layerStartTime = m_time.getTimeElapsedSinceStart();
 
-        const clock_t begin_time = clock();
-        float deltaTime = 0;
+            layer->start(layerStartTime);
+        }
+    }
+
+    void application::run()
+    {
+        start();
+        update();
+    }
+    
+    void application::update()
+    {
+        //This is to ensure last frame is older than start frame.
+        m_time.updateLastFrameTime = std::chrono::steady_clock::now();
 
         while (m_isRunning)
         {        
-            deltaTime = float( clock() - begin_time ) /  CLOCKS_PER_SEC;
+            m_time.updateStartFrameTime = std::chrono::steady_clock::now();
 
-            for(auto layer : m_layers)
+            for (auto layer : m_layers)
             {
+                double deltaTime = m_time.getFrameDeltaTime();
+
                 layer->update(deltaTime);
             }
+
+            m_time.updateLastFrameTime = std::chrono::steady_clock::now();
         }
-        
-        return errorCode;
     }
 
     application::~application()
     {
+        for (auto layer : m_layers)
+        {
+            free(layer);
+        }
+
         s_instance = nullptr;
     }
 

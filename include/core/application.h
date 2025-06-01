@@ -1,10 +1,16 @@
 #pragma once
+
+#include "maltime.h"
+
 #include <string>
 #include <vector>
-#include "layer.h"
+
+#define MAL_BIND_FUNCTION(func, app, paramCount) std::bind(&func, app, paramCount);
 
 namespace malachite
 {
+  class layer;
+
   struct appArgs
   {
     int argCount;
@@ -21,9 +27,15 @@ namespace malachite
 
     void addLayer(layer* layer);
 
-    int run();
+    void initalize();
+    void run();
     void close();
+
   private:
+    void start();
+    void update();
+
+    maltime m_time;
     bool m_isRunning;
     std::vector<layer*> m_layers;
   };

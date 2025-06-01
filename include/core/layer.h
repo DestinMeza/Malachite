@@ -1,32 +1,34 @@
 #pragma once
-
-#include <functional>
 #include <cstdint>
+
+#include "layerFuncs.h"
 
 namespace malachite
 {
-
-  typedef uint32_t layerID;
-  typedef std::function<void(float&)> updateFunc;
+  class application;
 
   class layer
   {
-    public:
-      layer(layerID id, updateFunc updateFunc);
+    friend class application;
 
-      const layerID& getLayerID()
+    public:
+      layer(uint32_t id, layerFunctionConfig config);
+      ~layer();
+
+      const uint32_t& getLayerID()
       {
-          return m_layerID;
+        return m_layerID;
       }
 
-    public:
-      virtual ~layer();
-      virtual void update(float deltaTime);
-      
-    protected:
-      layerID m_layerID;
+    private:
+      void initalize();
+      void postInitalize();
+      void start(double& startTime);
+
+      void update(double& deltaTime);
 
     private:
-      updateFunc m_updateFunc;
+      uint32_t m_layerID;
+      layerFunctionConfig m_config;
   };
 }
