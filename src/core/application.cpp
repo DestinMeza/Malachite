@@ -1,7 +1,7 @@
 #include "malpch.h"
 
 #include "application.h"
-#include "layer.h"
+#include "renderlayer.h"
 
 namespace malachite
 {
@@ -10,6 +10,8 @@ namespace malachite
     application::application(const std::string& name, appArgs appArgs)
     {
         s_instance = this;
+
+        addLayer(new renderlayer());
     }
 
     void application::initalize()
@@ -84,6 +86,6 @@ namespace malachite
 
     void application::addLayer(layer* layer)
     {
-        m_layers.emplace_back(layer);
+        m_layers.push_back(layer);
     }
 }

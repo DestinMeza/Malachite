@@ -6,7 +6,7 @@ namespace malachite
   layer::layer(uint32_t id, layerFunctionConfig config)
     : m_layerID(id), m_config(config)
   {
-        
+
   }
 
   layer::~layer(){}
@@ -24,6 +24,11 @@ namespace malachite
   void layer::start(double& startTime)
   {
     m_config.start(startTime);
+  }
+
+  void layer::postClose()
+  {
+    m_config.postClose();
   }
 
   void layer::update(double& deltaTime)

@@ -24,10 +24,11 @@ namespace malachite
       void initalize();
       void postInitalize();
       void start(double& startTime);
+      void postClose();
 
       void update(double& deltaTime);
 
-    private:
+    protected:
       uint32_t m_layerID;
       layerFunctionConfig m_config;
   };

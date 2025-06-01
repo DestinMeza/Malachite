@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-#define MAL_BIND_FUNCTION(func, app, paramCount) std::bind(&func, app, paramCount);
-
 namespace malachite
 {
   class layer;
@@ -31,6 +29,10 @@ namespace malachite
     void run();
     void close();
 
+    static void closeApp()
+    {
+      s_instance->close();
+    }
   private:
     void start();
     void update();
