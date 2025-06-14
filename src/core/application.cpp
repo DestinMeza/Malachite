@@ -1,7 +1,7 @@
 #include "malpch.h"
 
 #include "application.h"
-#include "renderlayer.h"
+#include "renderLayer.h"
 
 namespace malachite
 {
@@ -11,7 +11,7 @@ namespace malachite
     {
         s_instance = this;
 
-        addLayer(new renderlayer());
+        addLayer(new renderLayer());
     }
 
     void application::initalize()

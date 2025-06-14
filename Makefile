@@ -1,5 +1,16 @@
 CFLAGS = -std=c++17 -O2
-EX_LDDEP_FLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi
+EX_LDDEP_FLAGS = -lglfw \
+	-lglslang \
+	-lSPIRV-Tools-opt \
+	-lSPIRV-Tools \
+	-lshaderc_shared \
+	-lvulkan \
+	-ldl \
+	-lpthread \
+	-lX11 \
+	-lXxf86vm \
+	-lXrandr \
+	-lXi \
 
 OUTPUT = -o libs/libmalachite.so
 OUTPUT_OPTIONS = -fpic -shared
@@ -22,8 +33,6 @@ EXPORT = -o /usr/lib/libmalachite.so
 
 malachite:
 	g++ $(CFLAGS) $(EXPORT) $(OUTPUT_OPTIONS) $(COMPILED_FILES) $(INCLUDE_LIBS) $(EX_LDDEP_FLAGS)
-	g++ $(CFLAGS) $(OUTPUT) $(OUTPUT_OPTIONS) $(COMPILED_FILES) $(INCLUDE_LIBS) $(EX_LDDEP_FLAGS)
-	g++ $(CFLAGS) $(AGGREGATE_OUTPUT) $(OUTPUT_OPTIONS) $(COMPILED_FILES) $(INCLUDE_LIBS) $(EX_LDDEP_FLAGS)
 
 local:
 	g++ $(CFLAGS) $(OUTPUT) $(OUTPUT_OPTIONS) $(COMPILED_FILES) $(INCLUDE_LIBS) $(EX_LDDEP_FLAGS)

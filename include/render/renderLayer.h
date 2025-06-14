@@ -2,6 +2,7 @@
 #include "layer.h"
 
 #include <optional>
+#include <filesystem>
 #include <vulkan/vulkan.h>
 
 class GLFWwindow;
@@ -26,23 +27,35 @@ namespace malachite
     std::vector<VkPresentModeKHR> presentModes;
   };
 
-  enum SHADERTYPE
+  enum e_shaderType
   {
-    NONE = 0,
-    VERTEX = 1,
-    FRAGMENT = 2
+    none = 0,
+    vertex = 1,
+    fragment = 2,
+    compute = 3,
+    geometry = 4,
+    tess_control = 5,
+    tess_evaluation = 6
   };
 
-  class renderlayer : public layer
+  struct shader_schematic
+  {
+    std::filesystem::path fileName;
+    std::vector<std::string> fileContents;
+    std::vector<malachite::e_shaderType> shaderTypes;
+  };
+
+  class renderLayer : public layer
   {
     public:
-      renderlayer();
+      renderLayer();
 
     private:
       //called through layer binding
 
       void initalizeDependencies();
       void render(double& deltaTime);
+      void drawFrame(double& deltaTime);
       void cleanup();
 
       void initalizeWindow();
@@ -55,7 +68,12 @@ namespace malachite
       void initalizeLogicalDevice();
       void initalizeSwapChain();
       void initalizeImageViews();
+      void initalizeRenderPass();
       void initalizeGraphicsPipeline();
+      void initalizeFrameBuffers();
+      void initalizeCommandPool();
+      void initalizeCommandBuffer();
+      void initalizeSyncObjects();
 
       int rateDeviceSuitability(const VkPhysicalDevice& device);
       queueFamilyIndices findQueueFamilies(const VkPhysicalDevice& device);
@@ -64,7 +82,10 @@ namespace malachite
       VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
       VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
-      void createShaderModule(std::string fileName);
+      VkPipelineShaderStageCreateInfo createShaderModule(std::filesystem::path fileName, e_shaderType shaderType);
+      
+      //writes the commands we want to execute into a command buffer.
+      void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
       bool checkValidationLayerSupport();
       bool checkDeviceSuitablity(const VkPhysicalDevice& device);
@@ -80,12 +101,23 @@ namespace malachite
       VkPhysicalDevice m_vulkanPhysicalDevice = VK_NULL_HANDLE;
       VkDevice m_vulkanLogicalDevice;
       VkSwapchainKHR m_vulkanSwapChain;
+      VkRenderPass m_vulkanRenderPass;
+      VkPipelineLayout m_vulkanPipelineLayout;
+      VkPipeline m_vulkanGraphicsPipeline;
+      VkCommandPool m_vulkanCommandPool;
+      VkCommandBuffer m_vulkanCommandBuffer;
 
       VkQueue m_vulkanGraphicsQueue;
       VkQueue m_vulkanPresentQueue;
 
+      VkSemaphore m_vulkanImageAvailableSemaphore;
+      VkSemaphore m_vulkanRenderFinishedSemaphore;
+      VkFence m_vulkanInFlightFence;
+
+      std::vector<VkShaderModule> m_vulkanShaderModules;
       std::vector<VkImageView> m_vulkanSwapChainImageViews;
       std::vector<VkImage> m_vulkanSwapChainImages;
+      std::vector<VkFramebuffer> m_vulkanSwapChainFrameBuffers;
       VkFormat m_vulkanSwapChainImageFormat;
       VkExtent2D m_vulkanSwapChainExtent;
   };
